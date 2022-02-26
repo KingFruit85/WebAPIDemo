@@ -9,7 +9,7 @@ namespace WebAPIDemo.Controllers
     [Route("[controller]")]
     public class CakeController : ControllerBase
     {
-        private string connectionString = "Data Source=YOUR-SERVER-NAME-HERE;Initial Catalog=StatusCakeDemo;Integrated Security=True";
+        private string connectionString = "Data Source=DESKTOP-8DRN3BN;Initial Catalog=StatusCakeDemo;Integrated Security=True";
 
         [HttpGet]
         public List<Cake> Get()
@@ -50,12 +50,17 @@ namespace WebAPIDemo.Controllers
             connection.ConnectionString = connectionString;
             connection.Open();
 
-            string query = $"INSERT INTO StatusCakeDemo (CakeType,Cost,Description,Weight,StoreAvalibility) " +
-                                   $"VALUES ('{cakeType}',{cost},'{description}',{weight},{storeAvalibility});";
+            string query = "INSERT INTO StatusCakeDemo ([CakeType],[Cost],[Description],[Weight],[StoreAvalibility]) " +
+                            "VALUES (@CakeType,@Cost,@Description,@Weight,@StoreAvalibility);";
 
             using (SqlCommand command = new SqlCommand(query, connection))
             {
                 command.CommandType = System.Data.CommandType.Text;
+                command.Parameters.Add(new SqlParameter("@CakeType",cakeType));
+                command.Parameters.Add(new SqlParameter("@Cost", cost));
+                command.Parameters.Add(new SqlParameter("@Description", description));
+                command.Parameters.Add(new SqlParameter("@Weight", weight));
+                command.Parameters.Add(new SqlParameter("@StoreAvalibility", storeAvalibility));
                 command.ExecuteNonQuery();
             }
         }
@@ -68,11 +73,12 @@ namespace WebAPIDemo.Controllers
             connection.ConnectionString = connectionString;
             connection.Open();
 
-            string query = $"DELETE FROM StatusCakeDemo WHERE CakeType = '{cakeType}'";
+            string query = $"DELETE FROM StatusCakeDemo WHERE [CakeType] = @CakeType";
 
             using (SqlCommand command = new SqlCommand(query, connection))
             {
                 command.CommandType = System.Data.CommandType.Text;
+                command.Parameters.Add(new SqlParameter("@CakeType", cakeType));
                 command.ExecuteNonQuery();
             }
         }
